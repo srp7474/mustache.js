@@ -401,6 +401,17 @@
     var cache = this.cache;
 
     var value;
+    //-- srp extension - to allow function parameters.
+    // We assume name' is a function. otherwise parms are harmlessly ignored
+    var parms = null;
+    var parmIX = name.indexOf('(');
+    if (parmIX > 0) {
+      parms = name.substring(parmIX+1,name.length-1);
+      name = name.substring(0,parmIX);
+      //console.log("function with parms %s %s %o",name,parms,{this:this});
+    }
+    //-- srp extension end
+
     if (cache.hasOwnProperty(name)) {
       value = cache[name];
     } else {
@@ -475,9 +486,20 @@
     }
 
     if (isFunction(value))
-      value = value.call(this.view);
-
-    return value;
+      // -- srp extension to allow parameters to be passed to the traget function
+      //console.log("isFunction %s parms %s %o",name,parms,{context:this});
+      if (parms) {
+        if (parms.charAt(0) == '*') {    // offload parsing to function
+          value = value.apply(this.view,parms.substring(1));
+        } else {
+          var args = parms.split(/,/);
+          value = value.apply(this.view,args);
+        }
+      } else {
+        value = value.call(this.view);
+      }
+      // -- srp end extension
+      return value;
   };
 
   /**
