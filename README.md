@@ -302,7 +302,7 @@ Output:
 
 #### Instream Parameters
 
-This is a proposal by Steve Pritchard implemented in the modified mustache.js in this fork. It is less than 2 dozen lines of code but made a significant simplification to the code generator that was implmented using Mustache.js. In brief the {{funcName(parm1,parm2)}} is scanned for an opening and closing parenthesis.  If found the parenthetical string parm is parsed by splitting on the ',' character and the array is passed to the function (*funcName* in this case). *funcName* processes the parameters and returns a string in the normal fashion. (To allow for alternate parsing, the modification uses an `*` right after the opening paren as an escape mechanism so the unsplit string is passed as a single parameter to the receiving function).
+This is a proposal by Steve Pritchard implemented in the modified mustache.js in this fork. It is less than 2 dozen lines of code but made a significant simplification to the code generator that was implemented using Mustache.js. In brief the {{funcName(parm1,parm2)}} is scanned for an opening and closing parenthesis.  If found the parenthetical string parm is parsed by splitting on the ',' character and the array is passed to the function (*funcName* in this case). *funcName* processes the parameters and returns a string in the normal fashion. (To allow for alternate parsing, the modification uses an `*` right after the opening paren as an escape mechanism so the unsplit string is passed as a single parameter to the receiving function).
 
 I was thus able to write an *isState* function that would generate something only when the context state matched the parmameter state.
 
@@ -310,6 +310,13 @@ I was thus able to write an *isState* function that would generate something onl
 {{#isState(ready)}}
 <p>only generated when internal context state matches 'ready'</p>
 {{/isState(ready)}}
+```
+
+The receiving function:
+```html
+export function isState(testState) {
+  return (testState.indexOf(this.samState) >= 0);
+}
 ```
 
 The other major use was to generate HTML based on the template context and the supplied parameters. Thus
